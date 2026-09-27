@@ -1,30 +1,34 @@
 :root {
-  --bg: #0f172a;
-  --panel: #111827;
-  --panel-alt: #1f2937;
-  --card: #ffffff;
-  --card-soft: #f8fafc;
-  --primary: #2563eb;
-  --primary-strong: #1d4ed8;
-  --success-bg: #dcfce7;
-  --success-text: #166534;
-  --danger-bg: #fee2e2;
-  --danger-text: #991b1b;
-  --neutral: #e2e8f0;
-  --text: #0f172a;
-  --muted: #475569;
-  --shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-soft: #f8f9fa;
+  --surface-alt: #eef3ff;
+  --primary: #1a73e8;
+  --primary-strong: #0b57d0;
+  --primary-soft: rgba(26, 115, 232, 0.1);
+  --line: #dfe3e8;
+  --text: #202124;
+  --muted: #5f6368;
+  --success-bg: #e6f4ea;
+  --success-text: #137333;
+  --danger-bg: #fce8e6;
+  --danger-text: #a50e0e;
+  --shadow: 0 1px 2px rgba(60, 64, 67, 0.15), 0 1px 3px 1px rgba(60, 64, 67, 0.1);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Inter, "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #dbeafe 0%, #f8fafc 48%, #e2e8f0 100%);
+  font-family: Arial, "Segoe UI", sans-serif;
+  background: var(--bg);
   color: var(--text);
 }
 
@@ -33,32 +37,32 @@ button {
 }
 
 .app-shell {
-  max-width: 1440px;
-  margin: 24px auto;
+  max-width: 1480px;
+  margin: 18px auto;
   padding: 20px;
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 18px;
 }
 
 .sidebar,
 .exam-panel {
-  background: rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 24px;
-  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .sidebar {
-  padding: 20px 18px;
+  padding: 18px 16px;
 }
 
 .brand-block {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 11px;
@@ -68,23 +72,26 @@ button {
 
 .brand-block h1 {
   margin: 0;
-  font-size: clamp(1.9rem, 2vw, 2.8rem);
+  font-size: clamp(2rem, 2vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
 
 .stats-card {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin-bottom: 20px;
-  padding: 14px;
-  background: rgba(255, 255, 255, 0.78);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  padding: 14px 12px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
 }
 
 .stats-card > div {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .label {
@@ -98,57 +105,57 @@ button {
   align-items: center;
   margin: 12px 0 14px;
   font-weight: 700;
+  color: var(--text);
 }
 
 .question-navigator {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  max-height: 65vh;
+  max-height: 66vh;
   overflow-y: auto;
   padding-right: 4px;
 }
 
 .question-number {
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.72);
-  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  min-height: 42px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
+  color: var(--text);
 }
 
 .question-number:hover {
-  border-color: rgba(37, 99, 235, 0.7);
-  transform: translateY(-1px);
+  border-color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .question-number.current {
+  background: var(--primary-soft);
   border-color: var(--primary);
-  background: rgba(37, 99, 235, 0.12);
   color: var(--primary-strong);
 }
 
 .question-number.correct {
-  background: rgba(34, 197, 94, 0.16);
+  background: var(--success-bg);
+  border-color: rgba(19, 115, 51, 0.2);
   color: var(--success-text);
-  border-color: rgba(22, 101, 52, 0.35);
 }
 
 .question-number.incorrect {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--danger-bg);
+  border-color: rgba(165, 14, 14, 0.12);
   color: var(--danger-text);
-  border-color: rgba(153, 27, 27, 0.25);
 }
 
 .exam-panel {
-  padding: 20px 24px 28px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: var(--shadow);
+  padding: 16px 18px 22px;
 }
 
 .exam-header {
@@ -157,41 +164,43 @@ button {
   align-items: center;
   gap: 16px;
   margin-bottom: 18px;
+  padding-top: 4px;
 }
 
 .exam-header h2 {
   margin: 0;
-  font-size: clamp(1.2rem, 1.5vw, 1.8rem);
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  letter-spacing: -0.03em;
 }
 
 .domain-badge {
-  background: rgba(37, 99, 235, 0.12);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: var(--surface-alt);
+  border: 1px solid rgba(26, 115, 232, 0.18);
   color: var(--primary-strong);
   border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 12px;
+  padding: 7px 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .question-card,
 .result-card {
-  background: var(--card);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 18px;
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
 }
 
 .question-card {
-  padding: 26px 22px 20px;
+  padding: 22px 18px 18px;
 }
 
 .question-text {
-  margin: 0 0 22px;
-  font-size: clamp(1rem, 1.3vw, 1.3rem);
-  line-height: 1.7;
+  margin: 0 0 20px;
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 }
 
 .answer-list {
@@ -203,38 +212,31 @@ button {
 .answer-option {
   width: 100%;
   text-align: left;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.48);
-  background: var(--card-soft);
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
   color: var(--text);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
 }
 
 .answer-option:hover {
-  border-color: rgba(37, 99, 235, 0.7);
-  background: rgba(37, 99, 235, 0.04);
+  border-color: var(--primary);
+  background: var(--surface-alt);
 }
 
 .answer-option.selected {
   border-color: var(--primary);
-  background: rgba(37, 99, 235, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.25);
+  background: rgba(26, 115, 232, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.18);
 }
 
 .answer-option span {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 600;
-}
-
-.answer-option small {
-  display: block;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 0.85rem;
 }
 
 .actions-row {
@@ -242,23 +244,24 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 22px;
 }
 
 .primary-btn,
 .secondary-btn,
 .ghost-btn {
-  border-radius: 12px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 11px 18px;
   font-weight: 700;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.18s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .primary-btn {
   background: var(--primary);
   color: white;
+  box-shadow: 0 1px 2px rgba(26, 115, 232, 0.2);
 }
 
 .primary-btn:hover,
@@ -268,20 +271,20 @@ button {
 }
 
 .secondary-btn {
-  background: white;
-  border-color: rgba(148, 163, 184, 0.45);
+  background: var(--surface);
+  border-color: var(--line);
   color: var(--text);
 }
 
 .ghost-btn {
   background: transparent;
-  border-color: rgba(148, 163, 184, 0.45);
+  border-color: var(--line);
   color: var(--muted);
 }
 
 .result-card {
-  margin-top: 24px;
-  padding: 22px 18px;
+  margin-top: 22px;
+  padding: 18px 16px;
 }
 
 .hidden {
@@ -292,7 +295,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .result-badge {
@@ -300,8 +303,9 @@ button {
   padding: 8px 12px;
   border-radius: 999px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-size: 11px;
 }
 
 .result-badge.correct {
@@ -316,7 +320,7 @@ button {
 
 .result-summary {
   margin: 0 0 12px;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   line-height: 1.6;
 }
 
@@ -327,12 +331,12 @@ button {
 }
 
 .explanation {
-  color: var(--text);
-  line-height: 1.7;
-  background: #f8fafc;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 14px 16px;
-  border: 1px solid rgba(148, 163, 184, 0.24);
+  padding: 15px 16px;
+  line-height: 1.7;
+  color: var(--text);
 }
 
 @media (max-width: 920px) {

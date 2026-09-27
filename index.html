@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Agentic Certification Exam</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <p class="eyebrow">Assessment</p>
+          <h1>Agentic Exam</h1>
+        </div>
+
+        <div class="stats-card">
+          <div>
+            <span class="label">Progress</span>
+            <strong id="progressText">0 / 0</strong>
+          </div>
+          <div>
+            <span class="label">Score</span>
+            <strong id="scoreText">0%</strong>
+          </div>
+        </div>
+
+        <div class="question-list-header">
+          <span>Questions</span>
+          <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
+        </div>
+        <div id="questionNavigator" class="question-navigator"></div>
+      </aside>
+
+      <main class="exam-panel">
+        <header class="exam-header">
+          <div>
+            <p class="eyebrow">Question</p>
+            <h2 id="questionIndex">Question 1</h2>
+          </div>
+          <div id="domainBadge" class="domain-badge">Domain</div>
+        </header>
+
+        <section id="questionCard" class="question-card">
+          <p id="questionText" class="question-text"></p>
+
+          <div id="answerList" class="answer-list" aria-live="polite"></div>
+
+          <div class="actions-row">
+            <button id="prevBtn" class="secondary-btn" type="button">Previous</button>
+            <button id="submitBtn" class="primary-btn" type="button">Submit Answer</button>
+            <button id="nextBtn" class="secondary-btn" type="button">Next</button>
+          </div>
+        </section>
+
+        <section id="resultCard" class="result-card hidden" aria-live="polite">
+          <div class="result-header">
+            <span id="resultBadge" class="result-badge">Result</span>
+          </div>
+          <p id="resultSummary" class="result-summary"></p>
+          <div id="answerMeta" class="answer-meta"></div>
+          <div id="explanation" class="explanation"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="exam-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

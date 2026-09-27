@@ -23,6 +23,23 @@ const answerMeta = document.getElementById('answerMeta');
 const explanation = document.getElementById('explanation');
 const resetBtn = document.getElementById('resetBtn');
 
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatTextWithLinks(value = '') {
+  const escaped = escapeHtml(value);
+  return escaped.replace(
+    /(https?:\/\/[^\s<>"]+)/gi,
+    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+}
+
 function loadQuestions() {
   const data = typeof window.EXAM_DATA !== 'undefined' ? window.EXAM_DATA : null;
 
@@ -98,7 +115,7 @@ function renderQuestion() {
 
   questionIndex.textContent = `Question ${state.currentIndex + 1}`;
   domainBadge.textContent = currentQuestion.domain || 'General';
-  questionText.textContent = currentQuestion.question;
+  questionText.innerHTML = formatTextWithLinks(currentQuestion.question || '');
 
   answerList.innerHTML = '';
   Object.entries(currentQuestion.answers).forEach(([optionKey, optionText]) => {
@@ -110,7 +127,7 @@ function renderQuestion() {
     if (isSelected) optionBtn.classList.add('selected');
 
     optionBtn.innerHTML = `
-      <span>${optionKey}. ${optionText}</span>
+      <span>${optionKey}. ${formatTextWithLinks(optionText || '')}</span>
     `;
 
     optionBtn.addEventListener('click', () => {
@@ -175,7 +192,7 @@ function showResult(isCorrect, question, selected) {
   `;
 
   explanation.innerHTML = `
-    <strong>Explanation:</strong><br>${question.explanation}
+    <strong>Explanation:</strong><br>${formatTextWithLinks(question.explanation || '')}
   `;
 }
 

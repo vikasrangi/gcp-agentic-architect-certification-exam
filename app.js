@@ -40,6 +40,40 @@ function formatTextWithLinks(value = '') {
   );
 }
 
+function isMultipleChoiceQuestion(question) {
+  return Array.isArray(question.correct_answer);
+}
+
+function getSelectedAnswers(question) {
+  const selected = state.selectedAnswers[question.id];
+  if (Array.isArray(selected)) return [...selected];
+  if (selected) return [selected];
+  return [];
+}
+
+function isAnswerCorrect(question, selectedValue) {
+  if (Array.isArray(question.correct_answer)) {
+    const actual = Array.isArray(selectedValue) ? [...selectedValue].sort() : [];
+    const expected = [...question.correct_answer].sort();
+    return actual.length === expected.length && expected.every((item) => actual.includes(item));
+  }
+
+  const values = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
+  return values.includes(question.correct_answer);
+}
+
+function stringifySelectedAnswers(selectedValue) {
+  if (Array.isArray(selectedValue) && selectedValue.length) {
+    return selectedValue.join(', ');
+  }
+
+  if (selectedValue) {
+    return String(selectedValue);
+  }
+
+  return 'None';
+}
+
 function loadQuestions() {
   const data = typeof window.EXAM_DATA !== 'undefined' ? window.EXAM_DATA : null;
 
@@ -73,7 +107,7 @@ function loadQuestions() {
 
 function ensureInitialization() {
   state.questions.forEach((question) => {
-    state.selectedAnswers[question.id] = null;
+    state.selectedAnswers[question.id] = isMultipleChoiceQuestion(question) ? [] : null;
     state.submitted[question.id] = false;
   });
 }
@@ -90,12 +124,13 @@ function renderNavigator() {
     button.textContent = index + 1;
     button.setAttribute('aria-label', `Go to question ${index + 1}`);
 
+    button.classList.remove('current', 'correct', 'incorrect');
     if (index === state.currentIndex) button.classList.add('current');
 
     const answerState = state.submitted[question.id] ? 'submitted' : 'unanswered';
-    const selected = state.selectedAnswers[question.id];
+    const selected = getSelectedAnswers(question);
     if (answerState === 'submitted') {
-      const isCorrect = selected === question.correct_answer;
+      const isCorrect = isAnswerCorrect(question, selected);
       button.classList.add(isCorrect ? 'correct' : 'incorrect');
     }
 
@@ -113,36 +148,72 @@ function renderQuestion() {
   const currentQuestion = state.questions[state.currentIndex];
   if (!currentQuestion) return;
 
+  const multipleChoice = isMultipleChoiceQuestion(currentQuestion);
   questionIndex.textContent = `Question ${state.currentIndex + 1}`;
   domainBadge.textContent = currentQuestion.domain || 'General';
   questionText.innerHTML = formatTextWithLinks(currentQuestion.question || '');
 
   answerList.innerHTML = '';
+  const correctAnswers = Array.isArray(currentQuestion.correct_answer)
+    ? currentQuestion.correct_answer
+    : [currentQuestion.correct_answer];
+
   Object.entries(currentQuestion.answers).forEach(([optionKey, optionText]) => {
-    const optionBtn = document.createElement('button');
-    optionBtn.type = 'button';
-    optionBtn.className = 'answer-option';
+    const optionContainer = document.createElement('label');
+    optionContainer.className = 'answer-option';
 
-    const isSelected = state.selectedAnswers[currentQuestion.id] === optionKey;
-    if (isSelected) optionBtn.classList.add('selected');
+    const selectedValues = getSelectedAnswers(currentQuestion);
+    const isSelected = multipleChoice
+      ? selectedValues.includes(optionKey)
+      : state.selectedAnswers[currentQuestion.id] === optionKey;
 
-    optionBtn.innerHTML = `
-      <span>${optionKey}. ${formatTextWithLinks(optionText || '')}</span>
-    `;
+    const isSubmittedAnswer = state.submitted[currentQuestion.id];
+    const isCorrectOption = correctAnswers.includes(optionKey);
+    const isSelectedWrongOption = isSubmittedAnswer && isSelected && !isCorrectOption;
 
-    optionBtn.addEventListener('click', () => {
-      state.selectedAnswers[currentQuestion.id] = optionKey;
+    if (isSelected) optionContainer.classList.add('selected');
+    if (isSubmittedAnswer && isCorrectOption) optionContainer.classList.add('correct');
+    if (isSelectedWrongOption) optionContainer.classList.add('wrong');
+
+    const input = document.createElement('input');
+    input.type = multipleChoice ? 'checkbox' : 'radio';
+    input.name = `question-${currentQuestion.id}`;
+    input.checked = isSelected;
+    input.setAttribute('aria-label', `Answer option ${optionKey}`);
+
+    const optionTextNode = document.createElement('span');
+    optionTextNode.innerHTML = `${optionKey}. ${formatTextWithLinks(optionText || '')}`;
+
+    optionContainer.appendChild(input);
+    optionContainer.appendChild(optionTextNode);
+
+    optionContainer.addEventListener('click', () => {
+      if (state.submitted[currentQuestion.id]) {
+        state.submitted[currentQuestion.id] = false;
+      }
+
+      if (multipleChoice) {
+        const currentSelection = getSelectedAnswers(currentQuestion);
+        const nextSelection = currentSelection.includes(optionKey)
+          ? currentSelection.filter((value) => value !== optionKey)
+          : [...currentSelection, optionKey];
+
+        state.selectedAnswers[currentQuestion.id] = nextSelection;
+      } else {
+        state.selectedAnswers[currentQuestion.id] = optionKey;
+      }
+
       renderQuestion();
       renderNavigator();
     });
 
-    answerList.appendChild(optionBtn);
+    answerList.appendChild(optionContainer);
   });
 
   const isSubmitted = state.submitted[currentQuestion.id];
   const selected = state.selectedAnswers[currentQuestion.id];
-  if (isSubmitted && selected) {
-    const isCorrect = selected === currentQuestion.correct_answer;
+  if (isSubmitted && selected !== null && selected !== undefined && ((Array.isArray(selected) && selected.length) || (!Array.isArray(selected) && selected))) {
+    const isCorrect = isAnswerCorrect(currentQuestion, selected);
     showResult(isCorrect, currentQuestion, selected);
   } else {
     hideResult();
@@ -158,7 +229,9 @@ function submitAnswer() {
   if (!currentQuestion) return;
 
   const selected = state.selectedAnswers[currentQuestion.id];
-  if (!selected) {
+  const hasSelection = Array.isArray(selected) ? selected.length > 0 : !!selected;
+
+  if (!hasSelection) {
     resultCard.classList.remove('hidden');
     resultBadge.classList.remove('correct', 'wrong');
     resultBadge.classList.add('wrong');
@@ -169,8 +242,7 @@ function submitAnswer() {
   }
 
   state.submitted[currentQuestion.id] = true;
-  const isCorrect = selected === currentQuestion.correct_answer;
-  showResult(isCorrect, currentQuestion, selected);
+  renderQuestion();
   renderNavigator();
   updateProgress();
 }
@@ -188,7 +260,7 @@ function showResult(isCorrect, question, selected) {
   }
 
   answerMeta.innerHTML = `
-    Your answer: <strong>${selected}</strong> &nbsp;|&nbsp; Correct answer: <strong>${question.correct_answer}</strong>
+    Your answer: <strong>${formatTextWithLinks(stringifySelectedAnswers(selected))}</strong> &nbsp;|&nbsp; Correct answer: <strong>${formatTextWithLinks(stringifySelectedAnswers(question.correct_answer))}</strong>
   `;
 
   explanation.innerHTML = `
@@ -203,7 +275,13 @@ function hideResult() {
 function updateProgress() {
   const total = state.questions.length;
   const answered = Object.values(state.submitted).filter(Boolean).length;
-  const score = total ? Math.round((Object.values(state.questions).filter((question) => state.selectedAnswers[question.id] === question.correct_answer && state.submitted[question.id]).length / total) * 100) : 0;
+  const score = total ? Math.round(
+    (Object.values(state.questions).filter((question) => {
+      const selected = state.selectedAnswers[question.id];
+      const isCorrect = isAnswerCorrect(question, selected);
+      return isCorrect && state.submitted[question.id];
+    }).length / total) * 100
+  ) : 0;
 
   progressText.textContent = `${answered} / ${total}`;
   scoreText.textContent = `${score}%`;
@@ -221,9 +299,9 @@ function goToNextQuestion() {
 
 function resetExam() {
   state.currentIndex = 0;
-  Object.keys(state.selectedAnswers).forEach((key) => {
-    state.selectedAnswers[key] = null;
-    state.submitted[key] = false;
+  state.questions.forEach((question) => {
+    state.selectedAnswers[question.id] = isMultipleChoiceQuestion(question) ? [] : null;
+    state.submitted[question.id] = false;
   });
   renderQuestion();
   renderNavigator();

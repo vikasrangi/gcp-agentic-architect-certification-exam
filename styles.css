@@ -212,6 +212,9 @@ button {
 
 .answer-option {
   width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   text-align: left;
   padding: 10px 12px;
   border-radius: 10px;
@@ -220,6 +223,12 @@ button {
   color: var(--text);
   cursor: pointer;
   transition: all 0.15s ease;
+}
+
+.answer-option input {
+  margin-top: 2px;
+  accent-color: var(--primary);
+  transform: scale(1.05);
 }
 
 .answer-option:hover {
@@ -231,6 +240,18 @@ button {
   border-color: var(--primary);
   background: rgba(26, 115, 232, 0.04);
   box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.18);
+}
+
+.answer-option.correct {
+  background: var(--success-bg) !important;
+  border-color: rgba(19, 115, 51, 0.3) !important;
+  box-shadow: inset 0 0 0 1px rgba(19, 115, 51, 0.15) !important;
+}
+
+.answer-option.wrong {
+  background: var(--danger-bg) !important;
+  border-color: rgba(165, 14, 14, 0.25) !important;
+  box-shadow: inset 0 0 0 1px rgba(165, 14, 14, 0.15) !important;
 }
 
 .answer-option span {
